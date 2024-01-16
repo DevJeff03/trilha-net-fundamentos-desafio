@@ -1,10 +1,13 @@
+using System.Runtime.CompilerServices;
+using Microsoft.Win32.SafeHandles;
+
 namespace DesafioFundamentos.Models
 {
     public class Estacionamento
     {
         private decimal precoInicial = 0;
         private decimal precoPorHora = 0;
-        private List<string> veiculos = new List<string>();
+        private List<string> veiculos = new();
 
         public Estacionamento(decimal precoInicial, decimal precoPorHora)
         {
@@ -14,34 +17,46 @@ namespace DesafioFundamentos.Models
 
         public void AdicionarVeiculo()
         {
-            // TODO: Pedir para o usuário digitar uma placa (ReadLine) e adicionar na lista "veiculos"
-            // *IMPLEMENTE AQUI*
             Console.WriteLine("Digite a placa do veículo para estacionar:");
+            string placaInserida = Console.ReadLine();
+            if (placaInserida == "" || placaInserida.Length < 7 || placaInserida.Length > 7)
+            {
+                Console.WriteLine("Digite uma placa valida com 7 digitos.");
+            }
+            else
+            {
+                veiculos.Add(placaInserida.ToUpper());
+                Console.WriteLine("Veiculo cadastrado com sucesso.");
+            }
         }
 
         public void RemoverVeiculo()
         {
+            IEnumerable<string> buscaOrdenada = from placas in veiculos orderby placas[..1] ascending select placas;  
+            Console.WriteLine("Veiculos estacionados:");
+            foreach (string placaConsulta in buscaOrdenada)
+            {
+                Console.Write(placaConsulta + ", ");
+
+            }
+            Console.WriteLine();
             Console.WriteLine("Digite a placa do veículo para remover:");
-
-            // Pedir para o usuário digitar a placa e armazenar na variável placa
-            // *IMPLEMENTE AQUI*
-            string placa = "";
-
-            // Verifica se o veículo existe
+            string placa = Console.ReadLine().ToUpper();
             if (veiculos.Any(x => x.ToUpper() == placa.ToUpper()))
             {
                 Console.WriteLine("Digite a quantidade de horas que o veículo permaneceu estacionado:");
-
-                // TODO: Pedir para o usuário digitar a quantidade de horas que o veículo permaneceu estacionado,
-                // TODO: Realizar o seguinte cálculo: "precoInicial + precoPorHora * horas" para a variável valorTotal                
-                // *IMPLEMENTE AQUI*
-                int horas = 0;
-                decimal valorTotal = 0; 
-
-                // TODO: Remover a placa digitada da lista de veículos
-                // *IMPLEMENTE AQUI*
-
-                Console.WriteLine($"O veículo {placa} foi removido e o preço total foi de: R$ {valorTotal}");
+                string stringHoras = Console.ReadLine();
+                if (int.TryParse(stringHoras, out int horas))
+                {
+                    decimal valorTotal = precoInicial + precoPorHora * horas; 
+                    veiculos.Remove(placa);
+                    Console.WriteLine($"O veículo {placa.ToUpper()} foi removido, permaneceu durante {horas} horas e o preço total foi de: R$ {valorTotal.ToString("N2")}");
+                    Console.WriteLine($"Valor da primeira hora: {this.precoInicial} - Demais horas: {this.precoPorHora}");
+                }
+                else
+                {
+                    Console.WriteLine("Caracteres digitados são inválidos, favor tente novamente!");
+                }                
             }
             else
             {
@@ -51,12 +66,16 @@ namespace DesafioFundamentos.Models
 
         public void ListarVeiculos()
         {
-            // Verifica se há veículos no estacionamento
             if (veiculos.Any())
             {
                 Console.WriteLine("Os veículos estacionados são:");
-                // TODO: Realizar um laço de repetição, exibindo os veículos estacionados
-                // *IMPLEMENTE AQUI*
+                IEnumerable<string> buscaOrdenada = from placas in veiculos  
+                            orderby placas[..1] ascending  
+                            select placas;
+                foreach(string carros in buscaOrdenada)
+                {
+                    Console.WriteLine(carros);
+                }
             }
             else
             {
